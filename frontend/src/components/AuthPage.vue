@@ -70,7 +70,7 @@ const submit = async () => {
     }
 
     localStorage.setItem('username', username.value)
-    router.push('/messenger/chat')
+    router.push('/chat')
   } catch (err) {
     console.error('Error:', err)
     alert(err.response?.data?.error || err.message || 'Unknown error')

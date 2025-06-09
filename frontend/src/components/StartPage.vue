@@ -15,7 +15,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const goTo = (mode) => {
-  router.push({ path: '/messenger/auth', query: { mode } })
+  router.push({ path: '/auth', query: { mode } })
 }
 </script>
 
