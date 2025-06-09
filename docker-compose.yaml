@@ -2,7 +2,7 @@ services:
   nginx:
     image: nginx:stable-alpine
     ports:
-      - "82:82"  # <--- вот это строка нужна!
+      - "82:80"
     volumes:
       - './nginx.conf:/etc/nginx/nginx.conf'
     depends_on:
@@ -19,13 +19,13 @@ services:
     networks:
       - dev
         
-  messenger_frontend:
+  frontend:
     build:
       context: ./frontend 
     networks:
       - dev
 
-  messenger_backend:
+  backend:
     build:
       context: ./backend
     command: ["/wait-for-it.sh", "postgres:5432", "--", "./messenger-backend"]
