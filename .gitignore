@@ -1,0 +1,28 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build artifacts
+bin/
+pkg/
+
+# Test cache
+*.test
+*.out
+
+# Dependency management
+vendor/
+
+# IDE specific files
+.idea/
+.vscode/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Configuration files
+*.env
+config.yaml
