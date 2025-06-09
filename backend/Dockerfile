@@ -22,6 +22,6 @@ COPY --from=builder /app/messenger-backend .
 COPY --from=builder /wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
 
-EXPOSE 8001
+EXPOSE 8080
 
 CMD ["./messenger-backend"]
