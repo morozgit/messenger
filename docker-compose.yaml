@@ -1,12 +1,24 @@
 services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "82:82"  # <--- вот это строка нужна!
+    volumes:
+      - './nginx.conf:/etc/nginx/nginx.conf'
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - dev
   postgres:
-      image: postgres:15
-      environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-        POSTGRES_DB: messenger_db
-      networks:
-        - dev
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: messenger_db
+    networks:
+      - dev
+        
   messenger_frontend:
     build:
       context: ./frontend 
