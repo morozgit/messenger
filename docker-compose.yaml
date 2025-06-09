@@ -1,28 +1,28 @@
-version: '3.8'
-
 services:
+  postgres:
+      image: postgres:15
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: messenger_db
+      networks:
+        - dev
   messenger_frontend:
     build:
-      context: ./frontend  # путь до папки с фронтом
-    container_name: messenger_frontend
-    expose:
-      - "3001"  # порт, на котором работает фронт внутри сети
-    environment:
-      - VITE_API_URL=/messenger/api  # если используется Vite
+      context: ./frontend 
     networks:
       - dev
 
   messenger_backend:
     build:
-      context: ./backend  # путь до папки с backend'ом
-    container_name: messenger_backend
-    expose:
-      - "8001"
-    environment:
-      - PORT=8001
-      # Добавьте другие переменные, если нужно, напр. DB_URL и т.п.
+      context: ./backend
+    command: ["/wait-for-it.sh", "postgres:5432", "--", "./messenger-backend"]
+    env_file:
+    - ./backend/.env
     networks:
       - dev
+    depends_on:
+      - postgres
 
 networks:
   dev:
