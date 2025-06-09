@@ -30,7 +30,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	r.GET("/messenger/api/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/api/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.POST("/login", handlers.Login)
 	r.GET("/ws", handlers.HandleWebSocket)
 	r.GET("/users", handlers.GetUsers)
