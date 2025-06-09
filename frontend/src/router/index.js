@@ -4,9 +4,9 @@ import ChatBox from '../components/ChatBox.vue'
 import AuthPage from '../components/AuthPage.vue'
 
 const routes = [
-  { path: '/messenger/', component: StartPage },
-  { path: '/messenger/chat', component: ChatBox },
-  { path: '/messenger/auth', component: AuthPage }
+  { path: '/', component: StartPage },
+  { path: '/chat', component: ChatBox },
+  { path: '/auth', component: AuthPage }
 ]
 
 const router = createRouter({
