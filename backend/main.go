@@ -2,7 +2,7 @@
 // @version 1.0
 // @description Simple messaging API
 // @host localhost:8080
-// @BasePath /
+// @BasePath /api
 package main
 
 import (
@@ -30,7 +30,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	r.GET("/api/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/api/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.POST("/login", handlers.Login)
 	r.GET("/ws", handlers.HandleWebSocket)
 	r.GET("/users", handlers.GetUsers)
