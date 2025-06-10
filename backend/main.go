@@ -1,8 +1,3 @@
-// @title Messenger API
-// @version 1.0
-// @description Simple messaging API
-// @host localhost:8080
-// @BasePath /api
 package main
 
 import (
@@ -30,7 +25,18 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	r.GET("/api/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// Swagger UI и doc.json
+	r.GET("/api/*any", func(c *gin.Context) {
+		if c.Request.URL.Path == "/api/" {
+			c.Redirect(302, "/api/index.html")
+			return
+		}
+		ginSwagger.WrapHandler(
+			swaggerFiles.Handler,
+			ginSwagger.URL("/api/swagger/doc.json"),
+		)(c)
+	})
+
 	r.POST("/login", handlers.Login)
 	r.GET("/ws", handlers.HandleWebSocket)
 	r.GET("/users", handlers.GetUsers)

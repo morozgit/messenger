@@ -1,4 +1,3 @@
-basePath: /api
 definitions:
   handlers.LoginRequest:
     properties:
@@ -23,12 +22,8 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:8080
 info:
   contact: {}
-  description: Simple messaging API
-  title: Messenger API
-  version: "1.0"
 paths:
   /add_users:
     post:
