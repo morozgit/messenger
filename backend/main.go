@@ -25,7 +25,9 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// Swagger UI и doc.json
+	r.GET("/messenger/api/", func(c *gin.Context) {
+		c.Redirect(302, "/messenger/api/index.html")
+	})
 	r.GET("/messenger/api/*any", ginSwagger.WrapHandler(
 		swaggerFiles.Handler,
 		ginSwagger.URL("/messenger/api/swagger/doc.json"),
