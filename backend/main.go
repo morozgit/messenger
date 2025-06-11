@@ -26,7 +26,7 @@ func main() {
 	}))
 
 	// Swagger UI и doc.json
-	r.GET("/api/*any", ginSwagger.WrapHandler(
+	r.GET("/messenger/api/*any", ginSwagger.WrapHandler(
 		swaggerFiles.Handler,
 		ginSwagger.URL("/messenger/api/swagger/doc.json"),
 	))
