@@ -1,31 +1,20 @@
+# Этап 1: сборка фронта
 FROM node:18-alpine AS build
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
-
-# Копируем только файлы для установки зависимостей
-COPY package.json package-lock.json ./
-
-# Устанавливаем зависимости с кэшированием
+COPY package*.json ./
 RUN npm install --legacy-peer-deps
-
-# Копируем остальные файлы проекта
 COPY . .
+RUN npm run build
 
-# Запускаем сборку проекта
-RUN npm run build --verbose
-
-# Производственный образ Nginx
+# Этап 2: отдача статики через nginx
 FROM nginx:stable-alpine
 
-# Копируем собранное приложение из первого этапа
+# Копируем собранные файлы
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Копируем Nginx-конфигурацию
-COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf
+# Копируем свой nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Экспонируем порт 3000
-EXPOSE 3000
-
-# Запускаем Nginx
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
