@@ -26,16 +26,10 @@ func main() {
 	}))
 
 	// Swagger UI и doc.json
-	r.GET("/api/*any", func(c *gin.Context) {
-		if c.Request.URL.Path == "/api/" {
-			c.Redirect(302, "/api/index.html")
-			return
-		}
-		ginSwagger.WrapHandler(
-			swaggerFiles.Handler,
-			ginSwagger.URL("/messenger/api/swagger/doc.json"),
-		)(c)
-	})
+	r.GET("/api/*any", ginSwagger.WrapHandler(
+		swaggerFiles.Handler,
+		ginSwagger.URL("/messenger/api/swagger/doc.json"),
+	))
 
 	r.POST("/login", handlers.Login)
 	r.GET("/ws", handlers.HandleWebSocket)
