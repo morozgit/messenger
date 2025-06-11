@@ -33,7 +33,7 @@ func main() {
 		}
 		ginSwagger.WrapHandler(
 			swaggerFiles.Handler,
-			ginSwagger.URL("/api/swagger/doc.json"),
+			ginSwagger.URL("/messenger/api/swagger/doc.json"),
 		)(c)
 	})
 
