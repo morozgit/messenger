@@ -25,13 +25,16 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	r.GET("/messenger/api/", func(c *gin.Context) {
-		c.Redirect(302, "/messenger/api/index.html")
+	r.GET("/messenger/api/*any", func(c *gin.Context) {
+		if c.Param("any") == "/" || c.Param("any") == "" {
+			c.Redirect(302, "/messenger/api/index.html")
+			return
+		}
+		ginSwagger.WrapHandler(
+			swaggerFiles.Handler,
+			ginSwagger.URL("/messenger/api/swagger/doc.json"),
+		)(c)
 	})
-	r.GET("/messenger/api/*any", ginSwagger.WrapHandler(
-		swaggerFiles.Handler,
-		ginSwagger.URL("/messenger/api/swagger/doc.json"),
-	))
 
 	r.POST("/login", handlers.Login)
 	r.GET("/ws", handlers.HandleWebSocket)
