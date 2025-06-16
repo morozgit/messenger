@@ -56,12 +56,12 @@ const submit = async () => {
 
   try {
     if (isSignUp.value) {
-      await axios.post('http://localhost:8080/add_users', {
+      await axios.post('/messenger/api/add_users', {
         username: username.value,
         password: password.value,
       })
     } else {
-      await axios.post('http://localhost:8080/login', {
+      await axios.post('/messenger/api/login', {
         username: username.value,
         password: password.value,
       }, {

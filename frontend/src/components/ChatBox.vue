@@ -58,7 +58,7 @@ let socket = null
 
 const fetchUsers = async () => {
   try {
-    const res = await axios.get('http://localhost:8080/users')
+    const res = await axios.get('/messenger/api/users')
     users.value = res.data
   } catch (err) {
     console.error('Failed to load users:', err)
