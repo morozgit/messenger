@@ -37,6 +37,16 @@ services:
       - dev
     depends_on:
       - postgres
+  
+  bot:
+    build:
+      context: ./bot
+    env_file:
+    - ./bot/.env
+    depends_on:
+      - backend
+    networks:
+      - dev
 
 networks:
   dev:

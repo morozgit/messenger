@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import os
 import httpx
 from dotenv import load_dotenv
+import uvicorn
 
 load_dotenv()
 
@@ -14,6 +15,7 @@ app = FastAPI()
 
 class Message(BaseModel):
     text: str
+
 
 @app.post("/chat")
 async def chat(msg: Message):
@@ -41,3 +43,7 @@ async def chat(msg: Message):
             return {"reply": data["choices"][0]["message"]["content"].strip()}
     except Exception as e:
         return {"reply": f"Ошибка: {str(e)}"}
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8085)
