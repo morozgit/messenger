@@ -2,7 +2,7 @@ FROM python:3.12
 
 WORKDIR /app
 
-COPY pyproject.toml uv.lock ./
+COPY pyproject.toml ./
 
 RUN pip install uv
 
