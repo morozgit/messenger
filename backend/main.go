@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"log"
 	"messenger-backend/db"
 	"messenger-backend/handlers"
 
@@ -12,8 +14,18 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+func ensureBotUser() error {
+	_, err := db.Pool.Exec(context.Background(),
+		"INSERT INTO users(username, password) VALUES($1, $2) ON CONFLICT (username) DO NOTHING",
+		"bot", "some_secure_password")
+	return err
+}
+
 func main() {
 	db.InitDB()
+	if err := ensureBotUser(); err != nil {
+		log.Fatalf("failed to ensure bot user: %v", err)
+	}
 	go handlers.StartBroadcast()
 
 	r := gin.Default()
@@ -25,21 +37,18 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	r.GET("/messenger/api/*any", func(c *gin.Context) {
-		if c.Param("any") == "/" || c.Param("any") == "" {
-			c.Redirect(302, "/messenger/api/index.html")
-			return
-		}
-		ginSwagger.WrapHandler(
-			swaggerFiles.Handler,
-			ginSwagger.URL("/messenger/api/swagger/doc.json"),
-		)(c)
-	})
+	r.GET("/messenger/docs/*any", ginSwagger.WrapHandler(
+		swaggerFiles.Handler,
+		ginSwagger.URL("/messenger/docs/swagger/doc.json"),
+	))
 
-	r.POST("/login", handlers.Login)
-	r.GET("/ws", handlers.HandleWebSocket)
-	r.GET("/users", handlers.GetUsers)
-	r.POST("/add_users", handlers.AddUser)
+	api := r.Group("/messenger/api")
+	{
+		api.POST("/login", handlers.Login)
+		api.POST("/add_users", handlers.AddUser)
+		api.GET("/users", handlers.GetUsers)
+		api.GET("/ws", handlers.HandleWebSocket)
+	}
 
 	r.Run(":8080")
 }

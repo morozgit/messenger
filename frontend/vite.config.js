@@ -3,18 +3,20 @@ import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
   base: '/messenger/',
+
   plugins: [vue()],
+
   resolve: {
     alias: {
-      '@': '/src', 
+      '@': '/src',
     },
   },
+
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
+      '/messenger/api': {
+        target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, '/api'),
       },
     },
   },
