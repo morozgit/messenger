@@ -37,6 +37,7 @@ services:
       - dev
     depends_on:
       - postgres
+      - bot
   
   bot:
     build:
@@ -45,6 +46,8 @@ services:
     - ./bot/.env
     depends_on:
       - backend
+    ports:
+      - "8085:8085"
     networks:
       - dev
 
