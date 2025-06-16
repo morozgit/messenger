@@ -44,8 +44,6 @@ services:
       context: ./bot
     env_file:
     - ./bot/.env
-    depends_on:
-      - backend
     ports:
       - "8085:8085"
     networks:
