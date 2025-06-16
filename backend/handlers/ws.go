@@ -18,7 +18,7 @@ var (
 	clients   = make(map[*websocket.Conn]bool)
 	broadcast = make(chan WSMessage)
 	upgrader  = websocket.Upgrader{
-		CheckOrigin: func(r *http.Request) bool { return true }, // отключаем CORS-проверку
+		CheckOrigin: func(r *http.Request) bool { return true },
 	}
 	clientsMu = sync.Mutex{}
 )

@@ -102,7 +102,7 @@ onMounted(() => {
 
   fetchUsers()
 
-  socket = new WebSocket('ws://localhost:8080/ws')
+  socket = new WebSocket('ws://ubuntuserver:8080/ws')
   socket.addEventListener('open', () => {
     console.log('WebSocket connected')
   })
