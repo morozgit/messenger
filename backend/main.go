@@ -17,7 +17,7 @@ import (
 func ensureBotUser() error {
 	_, err := db.Pool.Exec(context.Background(),
 		"INSERT INTO users(username, password) VALUES($1, $2) ON CONFLICT (username) DO NOTHING",
-		"bot", "some_secure_password")
+		"Bot", "some_secure_password")
 	return err
 }
 
