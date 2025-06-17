@@ -106,7 +106,7 @@ onMounted(() => {
   const host = window.location.hostname
   const port = 8080
 
-  socket = new WebSocket(`${protocol}://${host}:${port}/ws`)
+ socket = new WebSocket(`${protocol}://${host}:${port}/messenger/api/ws`)
 
   socket.addEventListener('open', () => {
     console.log('WebSocket connected')

@@ -43,7 +43,24 @@ func HandleWebSocket(c *gin.Context) {
 			clientsMu.Unlock()
 			break
 		}
+
+		// Отправляем сообщение пользователя всем
 		broadcast <- msg
+
+		// Если автор не бот, спрашиваем бота
+		if msg.Author != "bot" {
+			reply, err := askBot(msg.Content)
+			if err != nil {
+				reply = "Bot error: " + err.Error()
+			}
+
+			botMsg := WSMessage{
+				Author:    "bot",
+				Content:   reply,
+				Recipient: msg.Author, // или по логике
+			}
+			broadcast <- botMsg
+		}
 	}
 }
 
