@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"sync"
 
@@ -36,6 +37,7 @@ func HandleWebSocket(c *gin.Context) {
 
 	for {
 		var msg WSMessage
+
 		err := conn.ReadJSON(&msg)
 		if err != nil {
 			clientsMu.Lock()
@@ -46,18 +48,29 @@ func HandleWebSocket(c *gin.Context) {
 
 		// Отправляем сообщение пользователя всем
 		broadcast <- msg
-
+		fmt.Println("HandleWebSocket", msg)
 		// Если автор не бот, спрашиваем бота
-		if msg.Author != "bot" {
-			reply, err := askBot(msg.Content)
+		if msg.Author != "Ai_Bot" && msg.Author != "My_Ai_Bot" {
+			var reply string
+			var err error
+
+			switch msg.Recipient {
+			case "Ai_Bot":
+				reply, err = askAiBot(msg.Content)
+			case "My_Ai_Bot":
+				reply, err = askMyAiBot(msg.Content)
+			default:
+				reply = "Неизвестный получатель. Доступны: Ai_Bot, My_Ai_Bot"
+			}
+
 			if err != nil {
-				reply = "Bot error: " + err.Error()
+				reply = "Ошибка бота: " + err.Error()
 			}
 
 			botMsg := WSMessage{
-				Author:    "bot",
+				Author:    msg.Recipient,
 				Content:   reply,
-				Recipient: msg.Author, // или по логике
+				Recipient: msg.Author,
 			}
 			broadcast <- botMsg
 		}
@@ -67,6 +80,7 @@ func HandleWebSocket(c *gin.Context) {
 func StartBroadcast() {
 	for {
 		msg := <-broadcast
+		fmt.Println("StartBroadcast", msg)
 		clientsMu.Lock()
 		for client := range clients {
 			err := client.WriteJSON(msg)

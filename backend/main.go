@@ -14,17 +14,26 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func ensureBotUser() error {
+func ensureAiBotUser() error {
 	_, err := db.Pool.Exec(context.Background(),
 		"INSERT INTO users(username, password) VALUES($1, $2) ON CONFLICT (username) DO NOTHING",
-		"Bot", "some_secure_password")
+		"Ai_Bot", "some_secure_password")
+	return err
+}
+func ensureMyAiBotUser() error {
+	_, err := db.Pool.Exec(context.Background(),
+		"INSERT INTO users(username, password) VALUES($1, $2) ON CONFLICT (username) DO NOTHING",
+		"My_Ai_Bot", "some_secure_password")
 	return err
 }
 
 func main() {
 	db.InitDB()
-	if err := ensureBotUser(); err != nil {
-		log.Fatalf("failed to ensure bot user: %v", err)
+	if err := ensureAiBotUser(); err != nil {
+		log.Fatalf("failed to ensure Ai_Bot user: %v", err)
+	}
+	if err := ensureMyAiBotUser(); err != nil {
+		log.Fatalf("failed to ensure My_Ai_Bot user: %v", err)
 	}
 	go handlers.StartBroadcast()
 

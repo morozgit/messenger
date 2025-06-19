@@ -3,11 +3,8 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"net/http"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type BotRequest struct {
@@ -18,17 +15,19 @@ type BotResponse struct {
 	Reply string `json:"reply"`
 }
 
-func askBot(text string) (string, error) {
+func askAiBot(text string) (string, error) {
+	return askBotWithURL(text, os.Getenv("AI_BOT_CHAT_URL"))
+}
+
+func askMyAiBot(text string) (string, error) {
+	return askBotWithURL(text, os.Getenv("MY_AI_BOT_CHAT_URL"))
+}
+
+func askBotWithURL(text, url string) (string, error) {
 	reqBody := BotRequest{Text: text}
 	jsonData, _ := json.Marshal(reqBody)
 
-	_ = godotenv.Load()
-	botAPIURL := os.Getenv("botAPIURL")
-	if botAPIURL == "" {
-		log.Fatal("botAPIURL is not set")
-	}
-
-	resp, err := http.Post(botAPIURL, "application/json", bytes.NewBuffer(jsonData))
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", err
 	}

@@ -17,8 +17,8 @@ class Message(BaseModel):
     text: str
 
 
-@app.post("/chat")
-async def chat(msg: Message):
+@app.post("/ai_bot_chat")
+async def aiBotChat(msg: Message):
     user_text = msg.text
 
     headers = {
@@ -27,12 +27,12 @@ async def chat(msg: Message):
     }
 
     payload = {
-        "model": "moonshotai/kimi-dev-72b:free", 
+        "model": "opengvlab/internvl3-14b:free", 
         "messages": [
-            {"role": "system", "content": "Ты дружелюбный помощник в чате."},
+            {"role": "system", "content": "Ты дружелюбный помощник в чате. Отвечай кратко, но информативно, до 5-6 предложений."},
             {"role": "user", "content": user_text}
         ],
-        "max_tokens": 100
+        "max_tokens": 512
     }
 
     try:
@@ -43,6 +43,13 @@ async def chat(msg: Message):
             return {"reply": data["choices"][0]["message"]["content"].strip()}
     except Exception as e:
         return {"reply": f"Ошибка: {str(e)}"}
+
+
+
+@app.post("/my_ai_bot_chat")
+async def myAiBotChat(msg: Message):
+    # user_text = msg.text
+    return {"reply": 'Бот в разработке'}
 
 
 if __name__ == "__main__":
