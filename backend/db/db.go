@@ -3,32 +3,27 @@ package db
 import (
 	"context"
 	"log"
-	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
-var Pool *pgxpool.Pool
+var (
+	UserPool *pgxpool.Pool
+	ChatPool *pgxpool.Pool
+)
 
-func InitDB() {
-	_ = godotenv.Load()
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		log.Fatal("DATABASE_URL is not set")
-	}
-
+func InitUserDB(connectURL string) {
 	var err error
-	Pool, err = pgxpool.New(context.Background(), dsn)
+	UserPool, err = pgxpool.New(context.Background(), connectURL)
 	if err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
+		log.Fatalf("Unable to connect to user database: %v\n", err)
 	}
 
-	if err = Pool.Ping(context.Background()); err != nil {
-		log.Fatalf("Database ping failed: %v\n", err)
+	if err = UserPool.Ping(context.Background()); err != nil {
+		log.Fatalf("User database ping failed: %v\n", err)
 	}
 
-	_, err = Pool.Exec(context.Background(), `
+	_, err = UserPool.Exec(context.Background(), `
 	CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
 		username TEXT UNIQUE NOT NULL,
@@ -36,6 +31,31 @@ func InitDB() {
 	);
 	`)
 	if err != nil {
-		log.Fatalf("Failed to initialize schema: %v\n", err)
+		log.Fatalf("Failed to initialize user schema: %v\n", err)
+	}
+}
+
+func InitChatDB(connectURL string) {
+	var err error
+	ChatPool, err = pgxpool.New(context.Background(), connectURL)
+	if err != nil {
+		log.Fatalf("Unable to connect to chat database: %v\n", err)
+	}
+
+	if err = ChatPool.Ping(context.Background()); err != nil {
+		log.Fatalf("Chat database ping failed: %v\n", err)
+	}
+
+	_, err = ChatPool.Exec(context.Background(), `
+	CREATE TABLE IF NOT EXISTS messages (
+		id SERIAL PRIMARY KEY,
+		chat_name TEXT NOT NULL,
+		sender_username TEXT NOT NULL,
+		content TEXT NOT NULL,
+		sent_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+	);
+	`)
+	if err != nil {
+		log.Fatalf("Failed to initialize chat schema: %v\n", err)
 	}
 }
