@@ -1,8 +1,8 @@
 <template>
   <div class="auth-wrapper">
     <div class="auth-card">
-      <div class="logo">🔺 Messenger</div>
-      <h2>{{ isSignUp ? 'Create Account' : 'Welcome Back' }}</h2>
+      <div class="logo">👾Messenger</div>
+      <h2>{{ isSignUp ? 'Create Account' : 'Hi there' }}</h2>
 
       <input type="text" placeholder="Username" v-model="username" required />
       <input type="password" placeholder="Password" v-model="password" required />
