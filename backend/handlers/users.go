@@ -96,7 +96,7 @@ func AddUser(c *gin.Context) {
 // @Failure 500 {object} map[string]string
 // @Router /users [get]
 func GetUsers(c *gin.Context) {
-	rows, err := db.Pool.Query(context.Background(), "SELECT id, username, password FROM users ORDER BY username")
+	rows, err := db.Pool.Query(context.Background(), "SELECT user_id, username, password FROM users ORDER BY username")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

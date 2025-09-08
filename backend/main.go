@@ -5,11 +5,13 @@ import (
 	"log"
 	"messenger-backend/db"
 	"messenger-backend/handlers"
+	"os"
 
 	_ "messenger-backend/docs"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -28,7 +30,13 @@ func ensureMyAiBotUser() error {
 }
 
 func main() {
-	db.InitDB()
+	_ = godotenv.Load()
+	url_db := os.Getenv("DATABASE_URL")
+	if url_db == "" {
+		log.Fatal("DATABASE_URL is not set")
+	}
+
+	db.InitDB(url_db)
 	if err := ensureAiBotUser(); err != nil {
 		log.Fatalf("failed to ensure Ai_Bot user: %v", err)
 	}
@@ -57,6 +65,7 @@ func main() {
 		api.POST("/add_users", handlers.AddUser)
 		api.GET("/users", handlers.GetUsers)
 		api.GET("/ws", handlers.HandleWebSocket)
+		api.GET("/chat_history", handlers.GetChatHistory)
 	}
 
 	r.Run(":8080")
