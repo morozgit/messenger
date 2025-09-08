@@ -43,7 +43,7 @@ func Login(c *gin.Context) {
 	}
 
 	var user User
-	err := db.UserPool.QueryRow(context.Background(),
+	err := db.Pool.QueryRow(context.Background(),
 		`SELECT id, username FROM users WHERE username = $1 AND password = $2`,
 		req.Username, req.Password).
 		Scan(&user.Id, &user.Username)
@@ -76,7 +76,7 @@ func AddUser(c *gin.Context) {
 		return
 	}
 
-	_, err := db.UserPool.Exec(context.Background(),
+	_, err := db.Pool.Exec(context.Background(),
 		"INSERT INTO users(username, password) VALUES($1, $2) ON CONFLICT DO NOTHING",
 		req.Username, req.Password)
 
@@ -96,7 +96,7 @@ func AddUser(c *gin.Context) {
 // @Failure 500 {object} map[string]string
 // @Router /users [get]
 func GetUsers(c *gin.Context) {
-	rows, err := db.UserPool.Query(context.Background(), "SELECT id, username, password FROM users ORDER BY username")
+	rows, err := db.Pool.Query(context.Background(), "SELECT user_id, username, password FROM users ORDER BY username")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

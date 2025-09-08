@@ -82,10 +82,10 @@
             {{ msg.author[0].toUpperCase() }}
           </div>
           <div class="message-content">
+            <div class="message-text">{{ msg.content }}</div>
             <div class="message-sender" v-if="msg.author !== currentUser">
               {{ msg.author }}
             </div>
-            <div class="message-text">{{ msg.content }}</div>
             <div class="message-time">{{ formatTime(msg.timestamp) }}</div>
           </div>
         </div>
@@ -130,21 +130,45 @@ let socket = null
 const fetchUsers = async () => {
   try {
     const res = await axios.get('/messenger/api/users')
+    console.log('users', res.data)
     users.value = res.data
   } catch (err) {
     console.error('Failed to load users:', err)
   }
 }
 
-const selectUser = (name) => {
-  if (!currentUser.value) {
-    currentUser.value = name
+const fetchChatHistory = async (author, recipient) => {
+  try {
+    const res = await axios.get('/messenger/api/chat_history', {
+      params: { author, recipient }
+    });
+    console.log('res', res)
+    // Проверяем, что res.data — массив
+    const data = Array.isArray(res.data) ? res.data : [];
+    messages.value = data.map(msg => ({
+      author: msg.author,   // уже приходит с бэка
+      content: msg.content,
+      timestamp: msg.created_at
+}));
+    console.log('messages after mapping', messages.value)
+  } catch (err) {
+    console.error('Failed to load chat history:', err);
+    messages.value = [];
   }
-  selectedUser.value = name
-  messages.value = []
-}
+};
 
-const sendMessage = () => {
+const selectUser = async (name) => {
+  selectedUser.value = name;
+  messages.value = [];
+
+  if (!users.value.length) {
+    await fetchUsers(); // дождёмся загрузки пользователей
+  }
+
+  await fetchChatHistory(currentUser.value, selectedUser.value);
+};
+
+const sendMessage = async () => {
   if (!currentUser.value || !selectedUser.value || !content.value || !socket) return;
 
   const message = {
@@ -168,21 +192,20 @@ const formatTime = (timestamp) => {
   const date = new Date(timestamp)
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
-
-const logout = () => {
+const logout = async() => {
   localStorage.removeItem('username')
   currentUser.value = ''
   selectedUser.value = ''
   router.push('/')
 }
 
-onMounted(() => {
+onMounted(async () => {
   const savedUsername = localStorage.getItem('username')
   if (savedUsername) {
     currentUser.value = savedUsername
   }
 
-  fetchUsers()
+  await fetchUsers()
 
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
   const host = window.location.hostname

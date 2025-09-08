@@ -17,13 +17,13 @@ import (
 )
 
 func ensureAiBotUser() error {
-	_, err := db.UserPool.Exec(context.Background(),
+	_, err := db.Pool.Exec(context.Background(),
 		"INSERT INTO users(username, password) VALUES($1, $2) ON CONFLICT (username) DO NOTHING",
 		"Ai_Bot", "some_secure_password")
 	return err
 }
 func ensureMyAiBotUser() error {
-	_, err := db.UserPool.Exec(context.Background(),
+	_, err := db.Pool.Exec(context.Background(),
 		"INSERT INTO users(username, password) VALUES($1, $2) ON CONFLICT (username) DO NOTHING",
 		"My_Ai_Bot", "some_secure_password")
 	return err
@@ -31,18 +31,12 @@ func ensureMyAiBotUser() error {
 
 func main() {
 	_ = godotenv.Load()
-	url_user := os.Getenv("DATABASE_URL_USER")
-	if url_user == "" {
-		log.Fatal("DATABASE_URL_USER is not set")
+	url_db := os.Getenv("DATABASE_URL")
+	if url_db == "" {
+		log.Fatal("DATABASE_URL is not set")
 	}
 
-	url_chat := os.Getenv("DATABASE_URL_CHAT")
-	if url_user == "" {
-		log.Fatal("DATABASE_URL_CHAT is not set")
-	}
-
-	db.InitUserDB(url_user)
-	db.InitChatDB(url_chat)
+	db.InitDB(url_db)
 	if err := ensureAiBotUser(); err != nil {
 		log.Fatalf("failed to ensure Ai_Bot user: %v", err)
 	}
@@ -71,6 +65,7 @@ func main() {
 		api.POST("/add_users", handlers.AddUser)
 		api.GET("/users", handlers.GetUsers)
 		api.GET("/ws", handlers.HandleWebSocket)
+		api.GET("/chat_history", handlers.GetChatHistory)
 	}
 
 	r.Run(":8080")
