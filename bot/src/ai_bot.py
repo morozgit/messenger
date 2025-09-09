@@ -22,9 +22,8 @@ async def aiBotChat(msg: Message):
     }
 
     payload = {
-        "model": "meta-llama/llama-3.2-11b-vision-instruct:free", 
+        "model": "google/gemma-3n-e4b-it:free", 
         "messages": [
-            {"role": "system", "content": "Ты дружелюбный помощник в чате. Отвечай кратко, но информативно, до 5-6 предложений."},
             {"role": "user", "content": user_text}
         ],
         "max_tokens": 512

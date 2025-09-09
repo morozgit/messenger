@@ -68,7 +68,7 @@
         </template>
       </div>
 
-      <div class="messages-container">
+      <div class="messages-container" ref="messagesContainer">
         <div 
           v-for="(msg, index) in messages" 
           :key="index"
@@ -114,7 +114,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, nextTick  } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
@@ -126,6 +126,18 @@ const content = ref('')
 const selectedUser = ref('')
 const currentUser = ref('')
 let socket = null
+
+const messagesContainer = ref(null)
+
+watch(messages, async () => {
+  await nextTick()
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTo({
+      top: messagesContainer.value.scrollHeight,
+      behavior: "smooth"
+    })
+  }
+})
 
 const fetchUsers = async () => {
   try {
@@ -168,6 +180,16 @@ const selectUser = async (name) => {
   await fetchChatHistory(currentUser.value, selectedUser.value);
 };
 
+const scrollToBottom = async () => {
+  await nextTick(); // ждём, пока DOM обновится
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTo({
+      top: messagesContainer.value.scrollHeight,
+      behavior: "smooth"
+    });
+  }
+};
+
 const sendMessage = async () => {
   if (!currentUser.value || !selectedUser.value || !content.value || !socket) return;
 
@@ -181,10 +203,12 @@ const sendMessage = async () => {
 
   if (message.recipient !== currentUser.value) {
     messages.value.push(message);
+    await scrollToBottom();
   }
 
   socket.send(JSON.stringify(message));
   content.value = '';
+
 };
 
 const formatTime = (timestamp) => {
@@ -225,7 +249,7 @@ onMounted(async () => {
     console.log('WebSocket disconnected')
   })
 
-  socket.addEventListener('message', event => {
+  socket.addEventListener('message', async event => {
   const msg = JSON.parse(event.data);
   
   if (msg.author === currentUser.value && !msg.isLocal) {
@@ -237,6 +261,7 @@ onMounted(async () => {
   }
   
   messages.value.push(msg);
+  await scrollToBottom();
   })
 })
 

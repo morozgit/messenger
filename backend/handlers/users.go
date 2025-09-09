@@ -44,7 +44,7 @@ func Login(c *gin.Context) {
 
 	var user User
 	err := db.Pool.QueryRow(context.Background(),
-		`SELECT id, username FROM users WHERE username = $1 AND password = $2`,
+		`SELECT user_id, username FROM users WHERE username = $1 AND password = $2`,
 		req.Username, req.Password).
 		Scan(&user.Id, &user.Username)
 
